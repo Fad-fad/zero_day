@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdarg.h>
+
+void my_sprintf(char *buffer, const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    // Parcours le format caractère par caractère
+    while (*format) {
+        // Si le caractère courant n'est pas un format spécifié
+        if (*format != '%') {
+            // Copie le caractère dans le buffer
+            *buffer++ = *format++;
+        } else {
+            // Si le caractère suivant est le format de chaîne de caractères
+            if (*(format + 1) == 's') {
+                format++; // Ignore le caractère '%'
+                char *str = va_arg(args, char*); // Récupère l'argument de type char*
+                // Copie chaque caractère de la chaîne de caractères dans le buffer
+                while (*str) {
+                    *buffer++ = *str++;
+                }
+                format++; // Ignore le caractère 's'
+            } else {
+                // Autre format spécifié non pris en charge, copie le caractère dans le buffer
+                *buffer++ = *format++;
+            }
+        }
+    }
+
+    *buffer = '\0'; // Ajoute le caractère de fin de chaîne
+    va_end(args);
+}
+
+int main() {
+    char buffer[100];
+    int num = 42;
+    float fnum = 3.14;
+    char str[] = "Hello, world!";
+
+    my_sprintf(buffer, "num: %d, fnum: %.2f, str: %s", num, fnum, str);
+    printf("Result: %s\n", buffer);
+
+    return 0;
+}
